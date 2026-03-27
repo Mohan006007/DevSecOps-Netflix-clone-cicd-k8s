@@ -1,36 +1,53 @@
 #!/bin/bash
 
-# install git
+# Update system
 sudo yum update -y
+
+# Install Git
 sudo yum install git -y
 
-# install jenkins
+# ---------------------------
+# Install Jenkins (Latest LTS)
+# ---------------------------
 sudo wget -O /etc/yum.repos.d/jenkins.repo \
-    https://pkg.jenkins.io/redhat-stable/jenkins.repo
+  https://pkg.jenkins.io/redhat-stable/jenkins.repo
+
 sudo rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io-2023.key
-sudo yum upgrade -y
+
+# Java 17 (still required)
 sudo dnf install java-17-amazon-corretto -y
+
+# Install Jenkins
 sudo yum install jenkins -y
 sudo systemctl enable jenkins
 sudo systemctl start jenkins
 
-# install docker
-sudo yum install docker -y
-sudo usermod -a -G docker ec2-user
-sudo usermod -a -G docker jenkins
-sudo chmod 777 /var/run/docker.sock
+# ---------------------------
+# Install Docker (Updated way)
+# ---------------------------
+sudo yum install -y docker
 sudo systemctl enable docker
 sudo systemctl start docker
 
-# install trivy
-sudo yum update -y
-sudo amazon-linux-extras install epel -y
-sudo yum install -y wget
-wget https://github.com/aquasecurity/trivy/releases/download/v0.18.3/trivy_0.18.3_Linux-64bit.rpm
-sudo yum install -y trivy_0.18.3_Linux-64bit.rpm
+# Add users to Docker group
+sudo usermod -aG docker ec2-user
+sudo usermod -aG docker jenkins
 
-# Run sonarqube image
-docker run -d --name sonar -p 9000:9000 sonarqube:lts-community
+# Fix Docker socket permission (optional but common)
+sudo chmod 666 /var/run/docker.sock
 
+# ---------------------------
+# Install Trivy (Latest method)
+# ---------------------------
+sudo rpm -ivh https://github.com/aquasecurity/trivy/releases/latest/download/trivy-0.50.0-1.x86_64.rpm
 
+# Verify Trivy
+trivy --version
 
+# ---------------------------
+# Run SonarQube (Latest LTS)
+# ---------------------------
+docker run -d \
+  --name sonar \
+  -p 9000:9000 \
+  sonarqube:lts
