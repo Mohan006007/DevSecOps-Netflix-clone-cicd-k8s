@@ -23,7 +23,7 @@ Please leave a ⭐ as motivation if you liked the implementation 😄
 
 <img width="1919" height="1019" alt="Screenshot 2026-03-28 035000" src="https://github.com/user-attachments/assets/a0481037-5006-438e-89af-7aeec4664405" />
 
-<img width="1919" height="1019" alt="Screenshot 2026-03-28 035000" src="https://github.com/user-attachments/assets/87f9e57b-d6d8-432e-a428-ad46b4b43bba" />
+<img width="1919" height="1020" alt="Screenshot 2026-03-28 034926" src="https://github.com/user-attachments/assets/8e0ce46d-11bc-439a-8bcf-85412413d2f7" />
 
 <br />
 <br />
