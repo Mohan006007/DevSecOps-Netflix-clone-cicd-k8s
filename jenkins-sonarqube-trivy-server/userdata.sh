@@ -39,7 +39,7 @@ sudo chmod 666 /var/run/docker.sock
 # ---------------------------
 # Install Trivy (Latest method)
 # ---------------------------
-sudo rpm -ivh https://github.com/aquasecurity/trivy/releases/latest/download/trivy-0.50.0-1.x86_64.rpm
+sudo rpm -ivh https://github.com/aquasecurity/trivy/releases/download/v0.69.3/trivy_0.69.3_Linux-64bit.rpm
 
 # Verify Trivy
 trivy --version
@@ -50,4 +50,4 @@ trivy --version
 docker run -d \
   --name sonar \
   -p 9000:9000 \
-  sonarqube:lts
+  sonarqube:community

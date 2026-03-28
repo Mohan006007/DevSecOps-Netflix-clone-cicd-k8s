@@ -1,5 +1,5 @@
 vpc_id        = "vpc-0aba1f32606ab2fd2"
-instance_type = "c7i-flex.large"
+instance_type = "m7i-flex.large"
 ami           = "ami-0f559c3642608c138"
 key_pair      = "Mark42"
 subnet_id     = "subnet-00b33d6c3188041b2"
