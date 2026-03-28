@@ -1,4 +1,7 @@
 # DevSecOps Netflix Clone Deployment
+
+<img width="860" height="515" alt="image" src="https://github.com/user-attachments/assets/a54d8e64-62f7-4fbe-bdc4-c841608467c8" />
+
 A simple Netflix Clone made using [Next.js](https://nextjs.org/) ⚡
 
 Currently, I have implemented the basic UI with media details fetch functionality.
