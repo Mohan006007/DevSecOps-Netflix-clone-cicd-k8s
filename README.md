@@ -1,4 +1,4 @@
-# Nextflix 
+# DevSecOps Netflix Clone Deployment
 A simple Netflix Clone made using [Next.js](https://nextjs.org/) ⚡
 
 Currently, I have implemented the basic UI with media details fetch functionality.
