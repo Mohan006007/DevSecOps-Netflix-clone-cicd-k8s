@@ -56,68 +56,90 @@ Use the code below for the Jenkins pipeline.
 ```bash
 pipeline {
     agent any
+
     environment {
         SCANNER_HOME = tool 'sonar-scanner'
+        DOCKER_IMAGE = "mohan006007/netflix:latest"
     }
+
     stages {
-        stage('clean workspace') {
+
+        stage('Clean Workspace') {
             steps {
                 cleanWs()
             }
         }
-        stage('Checkout from Git') {
+
+        stage('Checkout Code') {
             steps {
-                git branch: 'main', url: 'https://github.com/gauri17-pro/nextflix.git'
+                git branch: 'main', url: 'https://github.com/Mohan006007/DevSecOps-Netflix-clone-cicd-k8s.git'
             }
         }
-        stage("Sonarqube Analysis") {
+
+        stage('SonarQube Analysis') {
             steps {
                 withSonarQubeEnv('sonar-server') {
-                    sh '''$SCANNER_HOME/bin/sonar-scanner -Dsonar.projectName=Netflix \
-                    -Dsonar.projectKey=Netflix'''
+                    sh """
+                    $SCANNER_HOME/bin/sonar-scanner \
+                    -Dsonar.projectName=Netflix \
+                    -Dsonar.projectKey=Netflix
+                    """
                 }
             }
         }
-        stage('OWASP FS SCAN') {
+
+        stage('OWASP Dependency Check') {
             steps {
                 dependencyCheck additionalArguments: '--scan ./ --disableYarnAudit --disableNodeAudit', odcInstallation: 'OWASP DP-Check'
                 dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
             }
         }
-        stage('TRIVY FS SCAN') {
+
+        stage('Trivy File System Scan') {
+            steps {
+                sh "trivy fs . --exit-code 0 --severity HIGH,CRITICAL > trivyfs.txt"
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                withCredentials([string(credentialsId: 'api-key', variable: 'API_KEY')]) {
+                    sh """
+                    docker build \
+                    --build-arg API_KEY=$API_KEY \
+                    -t netflix .
+                    """
+                }
+            }
+        }
+
+        stage('Trivy Image Scan') {
+            steps {
+                sh "trivy image --exit-code 0 --severity HIGH,CRITICAL netflix > trivyimage.txt"
+            }
+        }
+
+        stage('Docker Push') {
             steps {
                 script {
-                    try {
-                        sh "trivy fs . > trivyfs.txt" 
-                    }catch(Exception e){
-                        input(message: "Are you sure to proceed?", ok: "Proceed")
+                    withDockerRegistry(credentialsId: 'docker-cred', toolName: 'docker') {
+                        sh "docker tag netflix ${DOCKER_IMAGE}"
+                        sh "docker push ${DOCKER_IMAGE}"
                     }
                 }
             }
         }
-        stage("Docker Build Image"){
-            steps{
-                   
-                sh "docker build --build-arg API_KEY=2af0904de8242d48e8527eeedc3e19d9 -t netflix ."
-            }
+    }
+
+    post {
+        always {
+            archiveArtifacts artifacts: '*.txt', allowEmptyArchive: true
         }
-        stage("TRIVY"){
-            steps{
-                sh "trivy image netflix > trivyimage.txt"
-                script{
-                    input(message: "Are you sure to proceed?", ok: "Proceed")
-                }
-            }
+        success {
+            echo "Pipeline executed successfully 🚀"
         }
-        stage("Docker Push"){
-            steps{
-                script {
-                    withDockerRegistry(credentialsId: 'docker-cred', toolName: 'docker'){   
-                    sh "docker tag netflix gauris17/netflix:latest "
-                    sh "docker push gauris17/netflix:latest"
-                    }
-                }
-            }
+        failure {
+            echo "Pipeline failed ❌"
         }
     }
 }
